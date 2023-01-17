@@ -2594,9 +2594,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioPrefab: {fileID: 7868752849116031971, guid: 0c93047c6b2db1d45b5e1fb3f35730c9, type: 3}
-  clockSound: {fileID: 8300000, guid: 1e0805ca10fe9ee45965c8bfe3ea9259, type: 3}
-  focusTimeSound: {fileID: 8300000, guid: 4e4b9811ea1b8da4b95878334951058b, type: 3}
-  breakTimeSound: {fileID: 8300000, guid: bea362d60bebfb94a911d918dfd00eb2, type: 3}
+  audioItems:
+  - {fileID: 11400000, guid: 91c0608c49dc3b245a8b2a5f7ee2cc6f, type: 2}
+  - {fileID: 11400000, guid: beddd302d2adab340832700f19d145a4, type: 2}
+  - {fileID: 11400000, guid: 269e427262b1aaa4fb92cf2342d0917d, type: 2}
 --- !u!4 &2106783680
 Transform:
   m_ObjectHideFlags: 0
