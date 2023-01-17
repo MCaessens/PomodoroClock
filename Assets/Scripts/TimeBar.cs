@@ -1,10 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class TimeBar : MonoBehaviour
 {
     [SerializeField] private GameObject timeBarForGround;
+
+    private void Awake()
+    {
+        DOTween.Init();
+    }
 
     public void CalculateTimeBar(float timeRemainingInSeconds, float timeGoalInSeconds)
     {
@@ -14,6 +21,6 @@ public class TimeBar : MonoBehaviour
 
     public void ResetTimeBar()
     {
-        timeBarForGround.transform.localScale = new Vector3(1, 1);
+        timeBarForGround.transform.DOScale(new Vector3(1, 1), 1f);
     }
 }

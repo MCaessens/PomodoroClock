@@ -67,8 +67,7 @@ public class PomodoroManager : MonoBehaviour
             return;
         }
         _currentState =  _previousState == State.Break || _isFirstTime ? State.Focus : State.Break;
-        Debug.Log(_currentState);
-        
+
         if (timeRemainingInSeconds == 0)
         {
             if (_currentState == State.Break)
@@ -101,6 +100,7 @@ public class PomodoroManager : MonoBehaviour
 
     public void ResetTimer()
     {
+        _previousState = _currentState;
         _currentState = State.Idle;
         timeRemainingInSeconds = 0;
         timeGoalInSeconds = 0;
@@ -183,8 +183,6 @@ public class PomodoroManager : MonoBehaviour
     {
         return number > 9 ? "" : "0";
     }
-    
-    
 
     #endregion
 }
