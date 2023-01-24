@@ -12,6 +12,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private GameObject audioPrefab;
     [SerializeField] private List<AudioItem> audioItems;
 
+    private AudioSource audioPrefabSource;
+
     #endregion
 
     #region Unity Methods
@@ -19,6 +21,7 @@ public class AudioManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        audioPrefabSource = this.audioPrefab.GetComponent<AudioSource>();
     }
 
     #endregion
@@ -37,7 +40,7 @@ public class AudioManager : MonoBehaviour
     private IEnumerator PlayEndSounds(float delayInSeconds, PomodoroManager.State state)
     {
         var clockItem = audioItems.FirstOrDefault(item => item.name.Contains("Clock"));
-        audioPrefab.GetComponent<AudioSource>().clip = clockItem.clip;
+        audioPrefabSource.clip = clockItem.clip;
         var clockSoundObj = Instantiate(audioPrefab);
         Destroy(clockSoundObj, delayInSeconds);
         
@@ -47,12 +50,11 @@ public class AudioManager : MonoBehaviour
         var breakItem = audioItems.FirstOrDefault(item => item.name.Contains("Break"));
         var selectedItem = state == PomodoroManager.State.Focus ? focusItem : breakItem;
         
-        audioPrefab.GetComponent<AudioSource>().clip = selectedItem.clip;
-        audioPrefab.GetComponent<AudioSource>().volume = selectedItem.volume;
+        audioPrefabSource.clip = selectedItem.clip;
+        audioPrefabSource.volume = selectedItem.volume;
         var timeEndSound = Instantiate(audioPrefab);
-        var endAudioSourceComponent = timeEndSound.GetComponent<AudioSource>();
 
-        Destroy(timeEndSound, endAudioSourceComponent.clip.length);
+        Destroy(timeEndSound, audioPrefabSource.clip.length);
     }
 
     #endregion
