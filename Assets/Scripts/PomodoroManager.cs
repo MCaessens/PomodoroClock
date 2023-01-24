@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -19,8 +16,9 @@ public class PomodoroManager : MonoBehaviour
         Idle,
         Paused
     }
-
-    [SerializeField] private TMP_InputField timeInput;
+    
+    [SerializeField] private TMP_InputField focusTimeInput;
+    [SerializeField] private TMP_InputField breakTimeInput;
     [SerializeField] private TextMeshProUGUI timeLabel;
     [SerializeField] private TextMeshProUGUI stateLabel;
     [SerializeField] private Button startButton;
@@ -70,20 +68,13 @@ public class PomodoroManager : MonoBehaviour
 
         if (timeRemainingInSeconds == 0)
         {
-            if (_currentState == State.Break)
-            {
-                timeRemainingInSeconds = 600f;
-                timeGoalInSeconds = 600f;
-            }
-            else
-            {
-                var isInputValid = float.TryParse(this.timeInput.text, out var timeInput);
-                if (!isInputValid) return;
+            var inputToParse = _currentState == State.Focus ? focusTimeInput.text : breakTimeInput.text;
+            var isInputValid = float.TryParse(inputToParse, out var parsedTimeInMinutes);
+            if (!isInputValid) return;
 
-                timeInput *= 60f;
-                timeRemainingInSeconds = timeInput;
-                timeGoalInSeconds = timeInput;
-            }
+            parsedTimeInMinutes *= 60;
+            timeGoalInSeconds = parsedTimeInMinutes;
+            timeRemainingInSeconds = parsedTimeInMinutes;
         }
 
         HandleStartUI();
@@ -100,13 +91,9 @@ public class PomodoroManager : MonoBehaviour
 
     public void ResetTimer()
     {
-        _previousState = _currentState;
-        _currentState = State.Idle;
-        timeRemainingInSeconds = 0;
-        timeGoalInSeconds = 0;
-        timeLabel.text = "00:00";
-        _isEndTriggered = false;
-
+        _previousState = State.Break;
+        ObjectCleaner.RemoveAudioObjects();
+        ResetToInitialState();
         HandleResetUI();
     }
 
@@ -120,9 +107,26 @@ public class PomodoroManager : MonoBehaviour
 
     #region Private Methods
 
+    private void ResetToInitialState()
+    {
+        timeRemainingInSeconds = 0;
+        timeGoalInSeconds = 0;
+        _currentState = State.Idle;
+        timeLabel.text = "00:00";
+        _isEndTriggered = false;
+    }
+
+    private void EndTimer()
+    {
+        _previousState = _currentState;
+        ResetToInitialState();
+
+        HandleResetUI();
+    }
+    
     private void HandleStartUI()
     {
-        timeInput.interactable = false;
+        focusTimeInput.interactable = false;
         stateLabel.text = $"{_currentState.ToString().ToUpper()} TIME";
         startButton.interactable = false;
         pauseButton.interactable = true;
@@ -137,12 +141,15 @@ public class PomodoroManager : MonoBehaviour
 
     private void HandleResetUI()
     {
+        stateLabel.text = "FOCUS TIME";
         startButton.interactable = true;
         pauseButton.interactable = false;
-        timeInput.interactable = true;
+        focusTimeInput.interactable = true;
         addFiveMinButton.interactable = true;
         timeBar.ResetTimeBar();
     }
+    
+
 
     private void UpdateRemainingTime()
     {
@@ -154,7 +161,7 @@ public class PomodoroManager : MonoBehaviour
 
         if (timeRemainingInSeconds <= 0)
         {
-            ResetTimer();
+            EndTimer();
             return;
         }
 
@@ -178,7 +185,7 @@ public class PomodoroManager : MonoBehaviour
 
         return stringBuilder.ToString();
     }
-
+    
     private static string AddNumberInsert(float number)
     {
         return number > 9 ? "" : "0";
